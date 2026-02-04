@@ -8,7 +8,9 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
+from billing import generate_all_bills
 from monthly_building_electricity import compute_monthly_building_electricity
+from monthly_electricity_cost import compute_monthly_electricity_cost
 from monthly_flats_electricity import compute_monthly_flats_electricity
 
 SCOPES = [
@@ -51,9 +53,7 @@ def get_credentials() -> Credentials:
                     "  3. Create Credentials > OAuth client ID > Desktop app\n"
                     "  4. Download the JSON and save it as 'client_secret.json'"
                 )
-            flow = InstalledAppFlow.from_client_secrets_file(
-                CLIENT_SECRET_FILE, SCOPES
-            )
+            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
             creds = flow.run_local_server(port=0)
         with open(TOKEN_FILE, "w") as f:
             f.write(creds.to_json())
@@ -103,6 +103,15 @@ def main():
     print("\nComputing monthly_flats_electricity...")
     result = compute_monthly_flats_electricity()
     print(f"Saved to .temp/monthly_flats_electricity.csv ({len(result)} rows)")
+
+    print("\nComputing monthly_electricity_cost...")
+    cost_df = compute_monthly_electricity_cost()
+    print(f"Saved to .temp/monthly_electricity_cost.csv ({len(cost_df)} rows)")
+
+    print("\nGenerating bills...")
+    flats_df = pd.read_csv(".temp/monthly_flats_electricity.csv")
+    building_df = pd.read_csv(".temp/monthly_building_electricity.csv")
+    generate_all_bills(config, cost_df, flats_df, building_df)
 
 
 if __name__ == "__main__":

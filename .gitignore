@@ -5,3 +5,4 @@ token.json
 uv.lock
 *.pyc
 __pycache__/
+/bills/*

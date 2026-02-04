@@ -64,10 +64,10 @@ def compute_monthly_flats_electricity(
             )
         totals["kwh_building"] = commun_diff - totals["kwh_fridge"]
 
-        # Split into months (period is day after prev reading to current reading)
-        month_start_date = period_start + timedelta(days=1)
-        current = month_start_date
-        while current <= period_end:
+        # Split into months (start-inclusive, end-exclusive of next reading)
+        actual_end = period_end - timedelta(days=1)
+        current = period_start
+        while current <= actual_end:
             first_of_month = date(current.year, current.month, 1)
             last_of_month = date(
                 current.year,
@@ -76,7 +76,7 @@ def compute_monthly_flats_electricity(
             )
 
             seg_start = max(current, first_of_month)
-            seg_end = min(last_of_month, period_end)
+            seg_end = min(last_of_month, actual_end)
             number_day = (seg_end - seg_start).days + 1
 
             row_data = {

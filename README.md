@@ -169,7 +169,9 @@ The formula for each consumer's cost is:
 
 Where `cost` comes from `.temp/monthly_building_electricity.csv`, grouped by month (sum).
 
-* **month_year**: each full month included in both the billing period and the reading period
+Only months fully covered by both data sources are included. A month is considered complete when the sum of allocated days equals the number of days in that month, for both the billing periods and the meter reading periods. Incomplete months (e.g. the last reading falls mid-month) are excluded.
+
+* **month_year**: each complete month covered by both the billing period and the reading period
 * **total_kwh**: sum of all meters' `kwh_current` for the month
 * **total_cost**: sum of `cost` from `.temp/monthly_building_electricity.csv` for the month
 * **cost_building**: share of cost for `kwh_building_current` (common areas)
@@ -177,3 +179,30 @@ Where `cost` comes from `.temp/monthly_building_electricity.csv`, grouped by mon
 * **cost_1**: share of cost for `kwh_1_current` (rez supérieur)
 * **cost_2**: share of cost for `kwh_2_current` (1er)
 * **cost_fridge**: share of cost for `kwh_fridge_current` (congélateur)
+
+
+
+#### Cost allocation
+
+The total electricity cost is split among the people living in the building. Each person pays for their flat's consumption plus a configurable share of the common areas and fridge costs.
+
+The allocation is defined in `config.json` under the `persons` key. Each person has:
+- **name**: full name (for billing)
+- **address**: postal address (for billing)
+- **flat_cost**: which flat cost column they pay (`cost_0`, `cost_1`, `cost_2`, or `null` if none)
+- **building_share**: percentage of `cost_building` they pay (all shares must sum to 100)
+- **fridge_share**: percentage of `cost_fridge` they pay (all shares must sum to 100)
+
+Example with 3 people:
+- Person 1 pays `cost_2` (1er) - no share of fridge or building
+- Person 2 pays `cost_1` (rez supérieur) + a share of building + a share of fridge
+- Person 3 pays `cost_0` (rez inférieur) + a share of building + a share of fridge
+- Personn 4 pays a share of building
+
+
+#### Billing 
+
+Export one PDF per person per month inside the folder ./bills
+if a bill for a given person and month done not rewite it 
+In the bill explain the calcul, very pedogogically
+

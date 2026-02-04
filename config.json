@@ -1,5 +1,59 @@
 {
   "sheet_url": "https://docs.google.com/spreadsheets/d/1QLasflSJrHTGToNr-dXaLMtD5eDdXl-vswja_KbSQBM",
   "worksheet_name": null,
-  "output_csv": "output_sheet.csv"
+  "creditor": {
+    "name": "Régis Longchamp",
+    "street": "Bellevueweg",
+    "house_num": "13",
+    "pcode": "2562",
+    "city": "Port",
+    "country": "CH"
+  },
+  "persons": [
+    {
+      "name": "Stanislas BRESSANGE",
+      "street": "Chemin de Villariez",
+      "house_num": "8",
+      "pcode": "1009",
+      "city": "Pully",
+      "country": "CH",
+      "flat_cost": "cost_2",
+      "building_share": 0,
+      "fridge_share": 0
+    },
+    {
+      "name": "Diane Longchamp",
+      "street": "Chemin de Villariez",
+      "house_num": "8",
+      "pcode": "1009",
+      "city": "Pully",
+      "country": "CH",
+      "flat_cost": "cost_1",
+      "building_share": 33,
+      "fridge_share": 50
+    },
+    {
+      "name": "Jean-Luc et Marie-Claire Longchamp",
+      "street": "Chemin de Villariez",
+      "house_num": "8",
+      "pcode": "1009",
+      "city": "Pully",
+      "country": "CH",
+      "flat_cost": "cost_0",
+      "building_share": 15,
+      "fridge_share": 50
+    },
+    {
+      "name": "Régis Lonchamp",
+      "street": "Bellevueweg",
+      "house_num": "13",
+      "pcode": "2562",
+      "city": "Port",
+      "country": "CH",
+      "flat_cost": null,
+      "building_share": 52,
+      "fridge_share": 0
+    }
+  ],
+  "IBAN": "CH09 00767 000T 5513 6564"
 }
