@@ -104,6 +104,7 @@ Meter readings are stored in the file `.temp/electricite_compteurs.csv`, which c
 * **Compteur commun [kWh]**: reading of the “commun” meter
 * **Compteur rez inférieur [kWh]**: reading of the “rez inférieur” meter
 * **Compteur rez supérieur [kWh]**: reading of the “rez supérieur” meter
+* **Compteur  1er [kWh]**: reading of the “1er étage” meter
 * **Compteur congélateur [kWh]**: reading of the “congélateur” meter
 
 ---
@@ -119,7 +120,7 @@ The resulting table should contain the following columns:
 * **billing_date**: taken from the source table
 * **billing_amount**: taken from the source table
 * **total_number_days**: total number of days in the billing period
-* **month_year**: each month fully included in the billing period
+* **month_year**: each month included in the billing period
 * **kwh_price**: taken from the source table
 * **number_day**: number of days in the billing period that fall within the given month (billing periods usually do not end on the last day of a month)
 * **kwh**: electricity consumption allocated to the month, computed as
@@ -127,4 +128,52 @@ The resulting table should contain the following columns:
 * **cost**: cost of electricity for this part of the month, computed as
   `kwh × kwh_price`
 
+Raise an issue if there is gaps in `.temp/electricite_romande_energie.csv`. And stop the process in that case.  
 
+
+
+#### Monthly flats electricity
+
+The goal is to create a table named `.temp/monthly_flats_electricity.csv`, based on the source file `.temp/electricite_compteurs.csv`.
+
+The resulting table should contain the following columns:
+
+* **reading_date** : taken from the source table - attribute `Date de relevé`
+* **total_number_days** : total number of day between the the previous reding and the current one 
+* **month_year**: each month included in the reading period
+* **number_day_reading_month** : number of day in the reading period and the month
+* **kwh_0_total** : total kWh from the `Compteur rez inférieur [kWh]` column un the source table
+* **kwh_0_current** : kwh for the current month / reading period for the `Compteur rez inférieur [kWh]`
+* **kwh_1_total** : total kWh from the `Compteur rez supérieur [kWh]` column un the source table
+* **kwh_1_current** : kwh for the current month / reading period for the `Compteur rez supérieur [kWh]`
+* **kwh_2_total** : total kWh from the `Compteur  1er [kWh]` column un the source table
+* **kwh_2_current** : kwh for the current month / reading period for the `Compteur  1er [kWh]`
+* **kwh_fridge_total** : total kWh from the `Compteur congélateur [kWh]` column un the source table
+* **kwh_fridge_current** : kwh for the current month / reading period for the `Compteur congélateur [kWh]`
+* **kwh_building_total** : total kWh from the `Compteur commun [kWh]` column in the source table minus `kwh_fridge_total`
+* **kwh_building_current** : kwh for the current month / reading period for the `Compteur commun [kWh]`  minus `kwh_fridge_total`
+
+-> sort the rows by Date de relevé. 
+-> raise an issue id not a valid date
+-> raise an issue if the amount of kWh decrease. 
+
+
+#### Monthly electricity cost
+
+The goal is to create a table named `.temp/monthly_electricity_cost.csv` based on `.temp/monthly_flats_electricity.csv` and `.temp/monthly_building_electricity.csv`.
+
+For each month, the total cost from the provider bill is distributed proportionally based on each consumer's share of the total internal consumption. The total internal consumption is the sum of all meters: `kwh_building_current + kwh_0_current + kwh_1_current + kwh_2_current + kwh_fridge_current`.
+
+The formula for each consumer's cost is:
+`consumer_cost = (consumer_kwh_current / total_internal_kwh_current) * cost`
+
+Where `cost` comes from `.temp/monthly_building_electricity.csv`, grouped by month (sum).
+
+* **month_year**: each full month included in both the billing period and the reading period
+* **total_kwh**: sum of all meters' `kwh_current` for the month
+* **total_cost**: sum of `cost` from `.temp/monthly_building_electricity.csv` for the month
+* **cost_building**: share of cost for `kwh_building_current` (common areas)
+* **cost_0**: share of cost for `kwh_0_current` (rez inférieur)
+* **cost_1**: share of cost for `kwh_1_current` (rez supérieur)
+* **cost_2**: share of cost for `kwh_2_current` (1er)
+* **cost_fridge**: share of cost for `kwh_fridge_current` (congélateur)

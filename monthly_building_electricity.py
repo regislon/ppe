@@ -1,5 +1,5 @@
 import calendar
-from datetime import date
+from datetime import date, timedelta
 
 import pandas as pd
 
@@ -8,6 +8,27 @@ def parse_chf(value: str) -> float:
     if not value or not isinstance(value, str):
         return 0.0
     return float(value.replace("CHF", "").replace(",", "").strip())
+
+
+def check_period_gaps(df: pd.DataFrame, end_col: str) -> None:
+    periods = []
+    for _, row in df.iterrows():
+        start = pd.to_datetime(row["Début période"], dayfirst=True).date()
+        end = pd.to_datetime(row[end_col], dayfirst=True).date()
+        periods.append((start, end))
+
+    periods.sort(key=lambda p: p[0])
+
+    for i in range(1, len(periods)):
+        prev_end = periods[i - 1][1]
+        curr_start = periods[i][0]
+        expected_next = prev_end + timedelta(days=1)
+        if curr_start != expected_next:
+            raise ValueError(
+                f"Gap detected in billing periods: "
+                f"period ending {prev_end} is followed by period starting {curr_start}. "
+                f"Expected {expected_next}."
+            )
 
 
 def compute_monthly_building_electricity(
@@ -22,6 +43,8 @@ def compute_monthly_building_electricity(
 
     # Handle typo in column name
     end_col = [c for c in df.columns if c.startswith("Fin p")][0]
+
+    check_period_gaps(df, end_col)
 
     rows = []
     for _, row in df.iterrows():

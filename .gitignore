@@ -3,3 +3,5 @@ client_secret.json
 token.json
 /.temp/*
 uv.lock
+*.pyc
+__pycache__/

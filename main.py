@@ -9,6 +9,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 from monthly_building_electricity import compute_monthly_building_electricity
+from monthly_flats_electricity import compute_monthly_flats_electricity
 
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets.readonly",
@@ -82,7 +83,6 @@ def download_all_sheets(
 
         csv_path = os.path.join(output_dir, f"{name}.csv")
         df.to_csv(csv_path, index=False)
-        print(f"  Saved to {csv_path} ({df.shape[0]} rows, {df.shape[1]} columns)")
 
     return dataframes
 
@@ -99,7 +99,10 @@ def main():
     print("\nComputing monthly_building_electricity...")
     result = compute_monthly_building_electricity()
     print(f"Saved to .temp/monthly_building_electricity.csv ({len(result)} rows)")
-    print(f"\n{result.to_string(index=False)}")
+
+    print("\nComputing monthly_flats_electricity...")
+    result = compute_monthly_flats_electricity()
+    print(f"Saved to .temp/monthly_flats_electricity.csv ({len(result)} rows)")
 
 
 if __name__ == "__main__":
