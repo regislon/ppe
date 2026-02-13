@@ -316,6 +316,7 @@ def build_bill_pdf(
         "kwh_0": "Rez inf.",
         "kwh_1": "Rez sup.",
         "kwh_2": "1er \u00e9t.",
+        "kwh_fridge": "Cong\u00e9l.",
     }
     readings_header = ["P\u00e9riode de relev\u00e9", ""]
     readings_header.extend(meter_short_labels[c] for c in CONSUMERS)
@@ -449,6 +450,15 @@ def build_bill_pdf(
             f"Part commun ({building_share}%)",
             f"{building_share}% \u00d7 {float(cost_row['cost_building']):.2f} CHF",
             f"{bill_data['building_amount']:.2f}",
+        ]
+    )
+
+    fridge_share = person["fridge_share"]
+    person_rows.append(
+        [
+            f"Part cong\u00e9lateur ({fridge_share}%)",
+            f"{fridge_share}% \u00d7 {float(cost_row['cost_fridge']):.2f} CHF",
+            f"{bill_data['fridge_amount']:.2f}",
         ]
     )
 

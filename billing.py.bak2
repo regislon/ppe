@@ -452,6 +452,15 @@ def build_bill_pdf(
         ]
     )
 
+    fridge_share = person["fridge_share"]
+    person_rows.append(
+        [
+            f"Part cong\u00e9lateur ({fridge_share}%)",
+            f"{fridge_share}% \u00d7 {float(cost_row['cost_fridge']):.2f} CHF",
+            f"{bill_data['fridge_amount']:.2f}",
+        ]
+    )
+
     person_table_data = [["Poste", "D\u00e9tail", "Montant CHF"]]
     person_table_data.extend(person_rows)
     person_table_data.append(["Total", "", f"{bill_data['total']:.2f}"])

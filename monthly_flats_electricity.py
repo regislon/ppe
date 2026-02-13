@@ -8,7 +8,6 @@ METER_COLUMNS = {
     "Compteur rez inférieur [kwh]": "kwh_0",
     "Compteur rez supérieur [kwh]": "kwh_1",
     "Compteur 1er [kwh]": "kwh_2",
-    "Compteur congélateur [kWh]": "kwh_fridge",
 }
 
 COL_COMMUN = "Compteur commun [kWh]"
@@ -55,14 +54,14 @@ def compute_monthly_flats_electricity(
                 )
             totals[dest_prefix] = diff
 
-        # kwh_building = commun minus fridge (fridge is on the commun circuit)
+        # kwh_building = commun meter reading
         commun_diff = float(curr[COL_COMMUN]) - float(prev[COL_COMMUN])
         if commun_diff < 0:
             raise ValueError(
                 f"kWh decreased for '{COL_COMMUN}': "
                 f"{prev[COL_COMMUN]} ({period_start}) -> {curr[COL_COMMUN]} ({period_end})"
             )
-        totals["kwh_building"] = commun_diff - totals["kwh_fridge"]
+        totals["kwh_building"] = commun_diff
 
         # Split into months (start-inclusive, end-exclusive of next reading)
         actual_end = period_end - timedelta(days=1)
@@ -81,6 +80,7 @@ def compute_monthly_flats_electricity(
 
             row_data = {
                 "reading_date": reading_date,
+                "period_start": period_start.strftime("%d/%m/%Y"),
                 "total_number_days": total_number_days,
                 "month_year": f"{current.year}-{current.month:02d}",
                 "number_day_reading_month": number_day,

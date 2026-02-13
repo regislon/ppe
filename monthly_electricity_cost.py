@@ -2,7 +2,7 @@ import calendar
 
 import pandas as pd
 
-CONSUMERS = ["kwh_building", "kwh_0", "kwh_1", "kwh_2", "kwh_fridge"]
+CONSUMERS = ["kwh_building", "kwh_0", "kwh_1", "kwh_2"]
 
 
 def _days_in_month(month_year: str) -> int:
@@ -13,9 +13,7 @@ def _days_in_month(month_year: str) -> int:
 def _complete_months(df: pd.DataFrame, days_col: str) -> set[str]:
     """Return month_year values where the sum of days covers the full month."""
     monthly_days = df.groupby("month_year")[days_col].sum()
-    return {
-        m for m, d in monthly_days.items() if d >= _days_in_month(m)
-    }
+    return {m for m, d in monthly_days.items() if d >= _days_in_month(m)}
 
 
 def compute_monthly_electricity_cost(
@@ -39,9 +37,7 @@ def compute_monthly_electricity_cost(
     flats_monthly = flats.groupby("month_year")[current_cols].sum().reset_index()
 
     # Sum building cost per month
-    building_monthly = (
-        building.groupby("month_year")["cost"].sum().reset_index()
-    )
+    building_monthly = building.groupby("month_year")["cost"].sum().reset_index()
     building_monthly = building_monthly.rename(columns={"cost": "total_cost"})
 
     # Join on complete months

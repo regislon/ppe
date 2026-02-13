@@ -80,6 +80,8 @@ def compute_monthly_building_electricity(
                 {
                     "billing_date": billing_date,
                     "billing_amount": billing_amount,
+                    "period_start": start.strftime("%d/%m/%Y"),
+                    "period_end": end.strftime("%d/%m/%Y"),
                     "total_number_days": total_number_days,
                     "month_year": f"{current.year}-{current.month:02d}",
                     "kwh_price": kwh_price,
